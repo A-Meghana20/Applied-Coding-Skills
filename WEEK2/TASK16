@@ -1,0 +1,70 @@
+class Solution {
+
+    public ListNode reverseKGroup(ListNode head, int k) {
+
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+
+        ListNode previousGroupTail = dummy;
+
+        while (previousGroupTail != null) {
+
+              ListNode currentNode = previousGroupTail;
+
+            // Check whether k nodes are available
+            for (int i = 0; i < k; i++) {
+                currentNode = currentNode.next;
+
+                if (currentNode == null) {
+                    return dummy.next;
+                }
+            }
+
+            ListNode groupStart = previousGroupTail.next;
+            ListNode nextGroupStart = currentNode.next;
+
+            // Disconnect the current group
+            currentNode.next = null;
+
+            // Reverse the group
+            previousGroupTail.next = reverse(groupStart);
+
+            // Connect to the next group
+            groupStart.next = nextGroupStart;
+
+            // Move to the next group
+            previousGroupTail = groupStart;
+        }
+
+        return dummy.next;
+    }
+
+    private ListNode reverse(ListNode head) {
+
+        ListNode dummy = new ListNode(0);
+        ListNode current = head;
+
+        while (current != null) {
+
+            ListNode nextNode = current.next;
+
+            current.next = dummy.next;
+            dummy.next = current;
+
+            current = nextNode;
+        }
+
+        return dummy.next;
+    }
+}
+
+
+Input
+head =
+[1,2,3,4,5]
+k =
+2
+Output
+[2,1,4,3,5]
+Expected
+[2,1,4,3,5]
