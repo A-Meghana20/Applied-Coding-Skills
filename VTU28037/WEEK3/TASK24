@@ -1,0 +1,41 @@
+class Solution {
+    public String minRemoveToMakeValid(String s) {
+
+        StringBuilder str = new StringBuilder();
+        int open = 0;
+
+        // First pass
+        for (int i = 0; i < s.length(); i++) {
+
+            char ch = s.charAt(i);
+
+            if (ch == '(') {
+                open++;
+                str.append(ch);
+            }
+            else if (ch == ')') {
+
+                if (open > 0) {
+                    open--;
+                    str.append(ch);
+                }
+                // If open == 0, ignore this ')'
+            }
+            else {
+                // Letter
+                str.append(ch);
+            }
+        }
+
+        // Remove extra '(' from the end
+        for (int i = str.length() - 1; i >= 0 && open > 0; i--) {
+
+            if (str.charAt(i) == '(') {
+                str.deleteCharAt(i);
+                open--;
+            }
+        }
+
+        return str.toString();
+    }
+}
