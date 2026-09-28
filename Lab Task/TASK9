@@ -1,0 +1,90 @@
+import java.util.*;
+
+public class Main {
+
+    static class Node {
+        int value;
+        int listIndex;
+        int elementIndex;
+
+        Node(int value, int listIndex, int elementIndex) {
+            this.value = value;
+            this.listIndex = listIndex;
+            this.elementIndex = elementIndex;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int M = sc.nextInt();
+        int K = sc.nextInt();
+
+        List<List<Integer>> lists = new ArrayList<>();
+
+        for (int i = 0; i < M; i++) {
+            int size = sc.nextInt();
+            List<Integer> list = new ArrayList<>();
+
+            for (int j = 0; j < size; j++) {
+                list.add(sc.nextInt());
+            }
+
+            lists.add(list);
+        }
+
+        // Min-heap for K-way merge
+        PriorityQueue<Node> minHeap =
+                new PriorityQueue<>((a, b) -> Integer.compare(a.value, b.value));
+
+        // Insert first element of every list
+        for (int i = 0; i < M; i++) {
+            if (!lists.get(i).isEmpty()) {
+                minHeap.offer(new Node(lists.get(i).get(0), i, 0));
+            }
+        }
+
+        List<Integer> merged = new ArrayList<>();
+
+        // K-way merge
+        while (!minHeap.isEmpty()) {
+            Node current = minHeap.poll();
+
+            merged.add(current.value);
+
+            int nextIndex = current.elementIndex + 1;
+
+            if (nextIndex < lists.get(current.listIndex).size()) {
+                minHeap.offer(new Node(
+                        lists.get(current.listIndex).get(nextIndex),
+                        current.listIndex,
+                        nextIndex
+                ));
+            }
+        }
+
+        // Max-heap for Top K
+        PriorityQueue<Integer> maxHeap =
+                new PriorityQueue<>(Collections.reverseOrder());
+
+        for (int value : merged) {
+            maxHeap.offer(value);
+        }
+
+        System.out.println("Merged:");
+        for (int value : merged) {
+            System.out.print(value + " ");
+        }
+        System.out.println();
+
+        System.out.println("TopK:");
+
+        for (int i = 0; i < K; i++) {
+            System.out.print(maxHeap.poll() + " ");
+        }
+
+        System.out.println();
+
+        sc.close();
+    }
+}
