@@ -1,0 +1,98 @@
+import java.util.*;
+
+public class Main {
+
+    static class Node {
+        int data;
+        Node left, right;
+
+        Node(int data) {
+            this.data = data;
+        }
+    }
+
+    // Calculate height using level-order traversal
+    static int height(Node root) {
+        if (root == null)
+            return -1;
+
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(root);
+
+        int h = -1;
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            h++;
+
+            for (int i = 0; i < size; i++) {
+                Node current = queue.poll();
+
+                if (current.left != null)
+                    queue.offer(current.left);
+
+                if (current.right != null)
+                    queue.offer(current.right);
+            }
+        }
+
+        return h;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+
+        if (n == 0) {
+            System.out.println("Height = -1");
+            System.out.println("Levels = 0");
+            return;
+        }
+
+        int[] values = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            values[i] = sc.nextInt();
+        }
+
+        // Build binary tree from level-order input
+        if (values[0] == -1) {
+            System.out.println("Height = -1");
+            System.out.println("Levels = 0");
+            return;
+        }
+
+        Node root = new Node(values[0]);
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(root);
+
+        int index = 1;
+
+        while (!queue.isEmpty() && index < n) {
+            Node current = queue.poll();
+
+            // Left child
+            if (index < n && values[index] != -1) {
+                current.left = new Node(values[index]);
+                queue.offer(current.left);
+            }
+            index++;
+
+            // Right child
+            if (index < n && values[index] != -1) {
+                current.right = new Node(values[index]);
+                queue.offer(current.right);
+            }
+            index++;
+        }
+
+        int h = height(root);
+        int levels = h + 1;
+
+        System.out.println("Height = " + h);
+        System.out.println("Levels = " + levels);
+
+        sc.close();
+    }
+}
