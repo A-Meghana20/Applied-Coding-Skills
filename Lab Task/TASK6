@@ -1,0 +1,75 @@
+import java.util.*;
+
+public class Main {
+    static class Task {
+        char task;
+        int count;
+        int availableTime;
+
+        Task(char task, int count, int availableTime) {
+            this.task = task;
+            this.count = count;
+            this.availableTime = availableTime;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int k = sc.nextInt();
+
+        // Count frequency of each task
+        Map<Character, Integer> freq = new HashMap<>();
+
+        for (int i = 0; i < n; i++) {
+            char task = sc.next().charAt(0);
+            freq.put(task, freq.getOrDefault(task, 0) + 1);
+        }
+
+        // Max heap: task with highest remaining frequency first
+        PriorityQueue<Task> pq = new PriorityQueue<>(
+            (a, b) -> b.count - a.count
+        );
+
+        for (Map.Entry<Character, Integer> entry : freq.entrySet()) {
+            pq.offer(new Task(entry.getKey(), entry.getValue(), 0));
+        }
+
+        // Queue for tasks in cooldown
+        Queue<Task> cooldown = new LinkedList<>();
+
+        int time = 0;
+
+        while (!pq.isEmpty() || !cooldown.isEmpty()) {
+
+            // Move tasks whose cooldown is finished
+            while (!cooldown.isEmpty() &&
+                   cooldown.peek().availableTime <= time) {
+                pq.offer(cooldown.poll());
+            }
+
+            if (!pq.isEmpty()) {
+                Task current = pq.poll();
+
+                current.count--;
+
+                time++;
+
+                // Put task into cooldown if it still has occurrences
+                if (current.count > 0) {
+                    current.availableTime = time + k;
+                    cooldown.offer(current);
+                }
+
+            } else {
+                // CPU is idle until the next task becomes available
+                time = cooldown.peek().availableTime;
+            }
+        }
+
+        System.out.println(time);
+
+        sc.close();
+    }
+}
